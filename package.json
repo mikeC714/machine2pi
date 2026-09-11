@@ -1,0 +1,19 @@
+{
+  "name": "machine2pi",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "bin":{
+	  "bulux":"./src/main.ts"
+  },
+  "scripts":{
+	  "start": "bun run ./src/main.ts",
+	  "dev": "bun --watch run ./src/main.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
