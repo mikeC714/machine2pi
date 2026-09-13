@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // shebang for now come up with custom later
 import { Methods } from "./methods.ts";
+import { basename } from "node:path";
 
 const ACTION = process.argv[1];
 const TARGET = process.argv[2];
@@ -41,7 +42,7 @@ Bun.serve({
 					return new Response("Invalid request missing headers.", { status:400 });
 				};
 
-				const pathName = req.headers.get("x-file-name");
+				const pathName = basename(req.headers.get("x-file-name") as string);
 				if(pathName === null){
 					return new Response("Invalid request missing headers.", { status:400 });
 				};
@@ -63,15 +64,16 @@ Bun.serve({
 					await methods.send(TARGET);
 					return new Response(JSON.stringify({ ok:true })); 
 				}catch(e){
+					throw e;
 				}
 			}
 		},
 		"/delete":{
 			DELETE: async(req):Promise<Response> => {
 				try{
-					
+					return new Response(JSON.stringify({ ok:true }));
 				}catch(e){
-
+					throw e;
 				}
 			}	
 		}
