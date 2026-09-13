@@ -89,7 +89,7 @@ export class Methods{
 			}
 
 		}finally{
-			console.log("Finshed write attept.")
+			console.log("Finshed write attempt.")
 		}
 	}; 
 
@@ -115,6 +115,7 @@ export class Methods{
 				method:"POST",
 				body:file
 			});	
+
 			console.log(`File Sent Successfully!`);
 			process.exit(0);
 
@@ -124,7 +125,7 @@ export class Methods{
 		};	
 	};
 
-	setDest = async(dest:string) => {
+	setDest = async(newDestination:string) => {
 		let rl:any;
 		let value:any;
 		if(src.dest){
@@ -135,15 +136,15 @@ export class Methods{
 				value = value.toLowerCase().trim();
 
 				if(value === "y"){
-					const newSourceDestination = await rl.question("What would you like the source destination to be?");
 
-					if(newSourceDestination.length === 0){
+					if(newDestination.length === 0){
 						console.log("Failed to provide a valid source.");
 						process.exit(1);
 					};
 
-					src.dest = newSourceDestination;
+					src.dest = newDestination;
 					await Bun.write("../src.json", JSON.stringify(src, null, 2));
+
 				}else if(value === "n"){
 					process.exit(1);
 				};	
@@ -155,6 +156,34 @@ export class Methods{
 		}
 	};
 
-	setRecipient = async() => {
+	setRecipient = async(newRecipient:string) => {
+		let rl:any;
+		let value:any;
+		if(src.dest){
+			rl = readline.createInterface({ input, output }) 
+
+			try{
+				value = await rl.question(`Source recipient is already set to ${src.recipient}. Would you like to change it? (Y/n)`);
+				value = value.toLowerCase().trim();
+
+				if(value === "y"){
+
+					if(newRecipient.length === 0){
+						console.log("Failed to provide a valid source.");
+						process.exit(1);
+					};
+
+					src.dest = newRecipient;
+					await Bun.write("../src.json", JSON.stringify(src, null, 2));
+
+				}else if(value === "n"){
+					process.exit(1);
+				};	
+
+			}catch(e){
+				console.error(e);
+				process.exit(1);
+			};
+		};
 	};
 }
