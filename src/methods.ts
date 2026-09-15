@@ -116,11 +116,13 @@ export class Methods{
 		const newPath = join(this.src.dest, fileName)
 
 		//create a decryption transform layer
-		const decompressedData = data .pipeThrough(new DecompressionStream("gzip"));
+		const decompressedData = data.pipeThrough(new DecompressionStream("gzip"));
 
 		try{
 		
+			console.log("WRITTING TO THE NEW PATH")
 			await Bun.write(newPath, new Response(decompressedData));
+			console.log("FINSIHED WRITTING")
 			return new Response("Transport complete.", { status:201 });
 
 		}catch(e){
