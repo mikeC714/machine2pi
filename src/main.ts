@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // shebang for now come up with custom later
-import { Methods } from "./methods.ts";
+import src from "../src.json" with { type:"json" }; 
 import { basename } from "node:path";
+import { Methods } from "./methods.ts"
+import { ReqMethods } from "./reqMethods.ts"
 
 const ACTION = process.argv[1];
 const TARGET = process.argv[2];
@@ -10,14 +12,15 @@ if(ACTION === undefined || TARGET === undefined){
 	process.exit(1);
 }
 
-const methods = new Methods();
+const methods = new Methods(src);
+const reqMethods = new ReqMethods(src);
 
 const actions:Record<string, any> = { 
 	"dest":methods.setDest,
-	"send":methods.send,
-	"delete":methods.deleteTarget,
+	"send":reqMethods.send,
+	"delete":reqMethods.sendDelete,
 	"--help":methods.help,
-}
+};
 
 if(!actions.includes(ACTION)){
 	console.error(`${ACTION} is not a valid method. Use "--help" to see available methods.`);
@@ -32,51 +35,30 @@ if(ACTION === "send"){
 	actions.help();
 };
 
-Bun.serve({
+
+export const server = Bun.serve({
 	port: process.env.PORT as string,
 	hostname:process.env.HOSTNAME,
 	routes:{
-		"/receive":{
+		"/":{
 			POST: async(req):Promise<Response> => {
-				if(!req.headers.has("x-file-name")){
-					return new Response("Invalid request missing headers.", { status:400 });
-				};
+				let fileName = basename(req.headers.get("x-file-name") as string) || null;
+				if( fileName === null) return new Response("Invalid request missing headers.", { status:400 });;
 
-				const pathName = basename(req.headers.get("x-file-name") as string);
-				if(pathName === null){
-					return new Response("Invalid request missing headers.", { status:400 });
-				};
+				let contentLen = req.headers.get("content-length") || 0;
+				if(contentLen) contentLen = Number(contentLen);
 
-				let contentLength:number | string = req.headers.get("content-length") || 0;
-				if(contentLength) contentLength = Number(contentLength);
-
-				try{
-					await methods.receive(pathName, contentLength, req.body as ReadableStream);
-					return new Response(JSON.stringify({ ok:true, status: 201 }));
-				}catch(e){
-					throw e;
-				}
-			}
-		},
-		"/transport":{
-			POST: async(req):Promise<Response> => {
-				try{
-					await methods.send(TARGET);
-					return new Response(JSON.stringify({ ok:true })); 
-				}catch(e){
-					throw e;
-				}
-			}
-		},
-		"/delete":{
+				await methods.receive(fileName, contentLen, req.body as ReadableStream);
+				return new Response(JSON.stringify({ ok:true, status: 201 }));
+			},
 			DELETE: async(req):Promise<Response> => {
-				try{
-					return new Response(JSON.stringify({ ok:true }));
-				}catch(e){
-					throw e;
-				}
-			}	
-		}
+				let fileName = basename(req.headers.get("x-file-name") as string) || null;
+				if( fileName === null) return new Response("Invalid request missing headers.", { status:400 });;
+
+				await methods.deleteTarget(fileName);
+				return new Response(JSON.stringify({ ok:true, status:200 }));
+			}
+		},
 	}
 })
 
