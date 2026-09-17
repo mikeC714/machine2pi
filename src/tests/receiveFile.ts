@@ -11,22 +11,21 @@ const target = "test_file.txt";
 let src:any = {
 	dest:"test_directory"
 };
-let fileDest:string = "";
-let contentLen:number | string = 0;
-let readStream:ReadableStream;
-let writeStream:any;
-let gzipStream:any;
-let zipOutput:any;
 
+let file;
+let filePath;
+let writeStream;
 
 beforeAll(async() => {
-	const dir = path.join(import.meta.dirname, src.dest);
-	fileDest = path.join(dir, "test_file.txt");
 	const data = "HELLO WORLD!\n";
-	writeStream = fs.createWriteStream(fileDest, { encoding:"utf8" });
+	const dir = path.join(import.meta.dirname, src.dest);
+
+	filePath = path.join(dir, "test_file.txt");
+	file = Bun.file(filePath)
+	;
+
 	gzipStream = createGzip();
 	zipOutput = fs.createWriteStream(path.join(dir, "test_file.txt.gz"));
-
 
 	
 	try{
