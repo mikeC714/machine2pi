@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "bin": {
-    "bulux": "./src/main.ts"
+    "bulux": "./src/main.ts",
+    "bulux-server": "./src/server.ts"
   },
   "scripts": {
     "start": "bun run ./src/main.ts",

@@ -29,7 +29,6 @@ export class Methods{
 		const file = Bun.file(targetPath);
 		try{
 			await file.delete();		
-			console.log("DELETED!!!!");
 			return new Response("Deleting target was a success.", { status:200 });
 		}catch(e){
 			throw e;
@@ -140,6 +139,7 @@ export class Methods{
 		}
 	}
 };
+
 
 
 

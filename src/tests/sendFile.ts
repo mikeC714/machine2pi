@@ -2,9 +2,9 @@ import { beforeAll, afterAll, test, describe, expect } from "bun:test";
 import path from "node:path";
 import request from "supertest";
 import fs from "node:fs/promises";
-import { server } from "../main.ts";
+import { server } from "../server.ts";
 
-const app = request(server);
+const app = request(server as any);
 
 let filePath:string | any;
 let dir:string | any;

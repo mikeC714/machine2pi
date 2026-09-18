@@ -1,11 +1,10 @@
 import { $ } from "bun";
 import { homedir } from  "node:os";
 
-
-const TARGET = "./main.ts";
+const TARGET = "./src/main";
 const COMMAND = "bulux";
 
-async function setup(){
+(async function setup(){
 	const dir = `${homedir()}/.local/bin`;
 	const link = `${dir}/${COMMAND}`;
 	try{
@@ -22,6 +21,6 @@ async function setup(){
 		process.exit(1);
 	}
 
-};
-setup();
+})();
+
 
